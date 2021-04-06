@@ -1,5 +1,6 @@
 import React, {forwardRef} from 'react';
 import {useI18N} from "./I18NProvider";
+import {transform} from "./Markdown";
 
 export type I18NProperty = {
   [key: string]: string | any[] | undefined;
@@ -22,7 +23,7 @@ export function withI18N<P extends I18NComponentProps>(Component: React.FC<P>): 
 const rewriteI18NProps = (props: I18NComponentProps) => {
   let { i18n = '', ...rest } = props;
   if (!i18n) return props;
-  const { bundles, lang } = useI18N();
+  const { bundles, lang, markdownRules} = useI18N();
   if (!lang || !bundles) {
     const names = bundles ? Object.keys(bundles).join(", ") : "undefined";
     throw new Error(`Unable to find bundle: lang=${lang} and bundles=${names}`)
@@ -34,9 +35,9 @@ const rewriteI18NProps = (props: I18NComponentProps) => {
     const value = bundle[(property as any)[key]];
     if (value) {
       if (typeof value === 'string') {
-        (rest as any)[key] = value;
+        (rest as any)[key] = transform(value, markdownRules);
       } else {
-        (rest as any)[key] = (value as Function)(...args);
+        (rest as any)[key] = transform((value as Function)(...args), markdownRules);
       }
     }
   });

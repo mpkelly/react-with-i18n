@@ -1,7 +1,6 @@
 import React, {FC, ReactNode} from "react";
 import {createContext} from "react-merge-context";
-import {LanguageBundle} from "./LanguageBundle";
-import {LanguageBundleSet} from "./LanguageBundleSet";
+import {LanguageBundle, LanguageBundleSet} from "./LanguageBundle";
 import {DefaultMarkdownRules, MarkdownRule} from "./Markdown";
 
 type Value = {
