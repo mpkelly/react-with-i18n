@@ -14,13 +14,13 @@ export type I18NComponentProps = {
 //TODO fix typings
 export function withI18N<P extends I18NComponentProps>(Component: React.FC<P>): React.FC<P> {
   return forwardRef<HTMLElement, P>((props, ref) => {
-    const next = rewriteI18NProps(props);
+    const next = assignI18NValues(props);
     // @ts-ignore
     return <Component {...next} ref={ref} />;
   }) as unknown as React.FC<P>
 };
 
-const rewriteI18NProps = (props: I18NComponentProps) => {
+const assignI18NValues = (props: I18NComponentProps) => {
   let { i18n = '', ...rest } = props;
   if (!i18n) return props;
   const { bundles, lang, markdownRules} = useI18N();
@@ -34,10 +34,16 @@ const rewriteI18NProps = (props: I18NComponentProps) => {
     const key = Object.keys(other)[0];
     const value = bundle[(property as any)[key]];
     if (value) {
+      let result:any;
       if (typeof value === 'string') {
-        (rest as any)[key] = transform(value, markdownRules);
+        result = transform(value, markdownRules);
       } else {
-        (rest as any)[key] = transform((value as Function)(...args), markdownRules);
+        result = transform((value as Function)(...args), markdownRules);
+      }
+      if (key === "children") {
+        (rest as any)["dangerouslySetInnerHTML"] = { __html:result}
+      } else {
+        (rest as any)[key] = result;
       }
     }
   });

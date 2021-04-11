@@ -2,7 +2,6 @@ import * as React from 'react';
 import {render} from '@testing-library/react';
 import {I18NComponentProps, I18NProvider, LanguageBundleSet, withI18N} from "../src";
 
-
 type Props = React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
 
 const Text = (props: Props) => {
@@ -21,6 +20,7 @@ const RootLanguages:LanguageBundleSet = {
     strikethrough: "Some ~~strikethrough~~ text",
     code: "Some `code` text",
     link: "A [link](url) here",
+    mixed: "Some ***bold italic*** `code` [link](url) ~~strikethrough~~ here",
   },
   other: {
     hello: "Hello.2",
@@ -107,12 +107,11 @@ describe('it', () => {
     dom.getByText("Hello.nested.2");
     dom.getByRole("Role.2");
   });
+
   it('supports bold markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={[
-          {children:"bold"},
-        ]}/>
+        <I18NText i18n={"bold"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -124,9 +123,7 @@ describe('it', () => {
   it('supports italic markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={[
-          {children:"italic"},
-        ]}/>
+        <I18NText i18n={"italic"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -138,9 +135,7 @@ describe('it', () => {
   it('supports strikethrough markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={[
-          {children:"strikethrough"},
-        ]}/>
+        <I18NText i18n={"strikethrough"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -152,9 +147,7 @@ describe('it', () => {
   it('supports code markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={[
-          {children:"code"},
-        ]}/>
+        <I18NText i18n={"code"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -166,9 +159,7 @@ describe('it', () => {
   it('supports link markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={[
-          {children:"link"},
-        ]}/>
+        <I18NText i18n={"link"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -176,5 +167,18 @@ describe('it', () => {
       return element?.innerHTML === 'A <a href="url">link</a> here'
     });
   });
-  
+
+  it('supports mixed markdown', () => {
+    const dom = render(
+      <I18NProvider bundles={RootLanguages} lang={"en"}>
+        <I18NText i18n={"mixed"}/>
+      </I18NProvider>
+    );
+    const html = `Some <em><strong>bold italic</strong></em> <code>code</code> <a href="url">link</a> <del>strikethrough</del> here`;
+    // @ts-ignore
+    dom.getByText(( content, element) => {
+      return element?.innerHTML.replace(/(\r?\n)/g, " ") === html
+    });
+  });
+
 });
