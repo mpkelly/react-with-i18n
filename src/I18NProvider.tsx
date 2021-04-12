@@ -44,22 +44,32 @@ type Props = {
  * A `Context.Provider` which makes `LanguageBundles` available to child components
  * via the `useI18N` hook or the `withI18N` higher order component.
  *
- * @param props see `Prosp`
+ * @param props see `Props`
  */
 export const I18NProvider: FC<Props> = (
   props
 ) => {
-  const { bundles = {}, children, markdownRules = DefaultMarkdownRules, lang} = props;
-
-  const parentLang = useI18N()?.lang;
+  let { bundles = {}, children, markdownRules = DefaultMarkdownRules, lang} = props;
 
   const flat:LanguageBundleSet = {};
   Object.keys(bundles).forEach(name => {
     flat[name] = flatten(bundles[name]);
   })
 
+  const parentLang = useI18N()?.lang;
+  lang = lang || parentLang;
+
+  if (!lang) {
+    throw Error('No lang specified')
+  }
+  const current = flat[lang];
+  if (!current) {
+    const names = bundles ? Object.keys(bundles).join(", ") : "undefined";
+    throw new Error(`Unable to find bundle: lang=${lang} and bundles=${names}`)
+  }
+
   const value = {
-    lang: lang || parentLang,
+    lang,
     bundles:flat,
     markdownRules
   };

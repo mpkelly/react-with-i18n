@@ -1,160 +1,142 @@
-# TSDX React User Guide
+# React with I18N
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+Easily add lightweight yet powerful I18N support to your component library components. 
 
-> This TSDX setup is meant for developing React component libraries (not apps!) that can be published to NPM. If you’re looking to build a React-based app, you should use `create-react-app`, `razzle`, `nextjs`, `gatsby`, or `react-static`.
+## Quick start
 
-> If you’re new to TypeScript and React, checkout [this handy cheatsheet](https://github.com/sw-yx/react-typescript-cheatsheet/)
 
-## Commands
 
-TSDX scaffolds your new library inside `/src`, and also sets up a [Parcel-based](https://parceljs.org) playground for it inside `/example`.
+```typescript jsx
+import {withI18N, I18NComponentProps, I18NProvider} from "react-with-i18n";
+import {Text, TextProps} from "./my-awesome-library/Text"
 
-The recommended workflow is to run TSDX in one terminal:
+// Do this for each library component that needs I18N support. You can (and should) 
+// I18Nize ARIA properties like role etc
+const I18NText = withI18N<TextProps & I18NComponentProps>(Text);
 
-```bash
-npm start # or yarn start
+// In your app elsewhere
+
+const Languages = {
+  en: {
+    login: {
+      userName:"Username",
+      password:"Password",
+    }
+  }
+  //...
+}
+
+<I18NProvider lang={"en"} bundles={Languages}>
+  <I18NText i18n="login.userName"/>  
+</I18NProvider>
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+## Features at a glance
 
-Then run the example inside another:
+- Smallest library on Bundlephobia at just ...
+- The cleanest way to add I18N support for React - no special components and just one extra prop for your library components
+- Support for language bundle nesting and inheritance (think code splitting)
+- Support any properties on target components, including ARIA properties
+- Supports markdown e.g. a value of `Hello, **world**` becomes `Hello <strong>world</world>`
+- The `i18n` property supports multiple props and also args for dynamic output
+- Package includes totally optional formatting utils for plurals, dates and currencies
 
-```bash
-cd example
-npm i # or yarn to install dependencies
-npm start # or yarn start
+## The `i18n` property
+
+Components enhanced with `withI18N` will support the `i18n` prop which is defined as follows
+
+```typescript jsx
+export type I18NProperty = {
+  [key: string]: string | any[] | undefined;
+  args?: any[];
+};
+
+export type I18NComponentProps = {
+  i18n?: string | I18NProperty | I18NProperty[];
+};
 ```
 
-The default example imports and live reloads whatever is in `/dist`, so if you are seeing an out of date component, make sure TSDX is running in watch mode like we recommend above. **No symlinking required**, we use [Parcel's aliasing](https://parceljs.org/module_resolution.html#aliases).
+So this means you can use the property as follows. By default the key's value will be 
+set as the React children property, which is the standard use-case.
 
-To do a one-off build, use `npm run build` or `yarn build`.
+````typescript jsx
+<Text i18n={"key"}/>
+````
 
-To run tests, use `npm test` or `yarn test`.
+However, you can set specify the target property
 
-## Configuration
+````typescript jsx
+//Same as above
+<Text i18n={{children:"key"}}/>
+````
 
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
+Target the title property
 
-### Jest
+````typescript jsx
+<Text i18n={{title:"key"}}/> 
+````
 
-Jest tests are set up to run with `npm test` or `yarn test`.
+Target multiple properties
+````typescript jsx
+<Text i18n={[
+  {children:"key1"},
+  {title:"key2"},
+  {role:"key3"},
+]}/>
+````
 
-### Bundle analysis
+The above would produce a DOM element like so
+````typescript jsx
+<span title="..." role="...">...</span>
+````
 
-Calculates the real cost of your library using [size-limit](https://github.com/ai/size-limit) with `npm run size` and visulize it with `npm run analyze`.
+You can also specify arguments 
 
-#### Setup Files
+````typescript jsx
+<Text i18n={{children:"key", args:[1, "Mike"]}}/>
+````
+For the above your language bundle entry would look something like
+````typescript jsx
+const Languages = {
+  en: {
+    key: (count, name)=> `The count is ${count} and the name is ${name}`
+  }
+  //...
+}
+````
 
-This is the folder structure we set up for you:
+## The `useI18N` hook
 
-```txt
-/example
-  index.html
-  index.tsx       # test your component here in a demo app
-  package.json
-  tsconfig.json
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
-```
+You should be aiming to add native support to all of your library components. However, non-trivial
+apps will normally have some hard-to-reach places that need I18N support. For these, you can use the hook
 
-#### React Testing Library
-
-We do not set up `react-testing-library` for you yet, we welcome contributions and documentation on this.
-
-### Rollup
-
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
-
-### TypeScript
-
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
-
-## Continuous Integration
-
-### GitHub Actions
-
-Two actions are added by default:
-
-- `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
-- `size` which comments cost comparison of your library on every pull request using [`size-limit`](https://github.com/ai/size-limit)
-
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
-
-```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
-
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
+```typescript jsx
+const Component = () => {
+  const {lang, bundles} = useI18N();
+  const current = bundles[lang];
+  const i18nValue = current["key"];
+  //...
 }
 ```
 
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
+## Nesting bundles
 
-## Module Formats
+You can nest `I18NProviders` and the child will automatically merge its bundles in with its parents. It uses
+the `deepmerge` library for this. 
 
-CJS, ESModules, and UMD module formats are supported.
-
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
-
-## Deploying the Example Playground
-
-The Playground is just a simple [Parcel](https://parceljs.org) app, you can deploy it anywhere you would normally deploy that. Here are some guidelines for **manually** deploying with the Netlify CLI (`npm i -g netlify-cli`):
-
-```bash
-cd example # if not already in the example folder
-npm run build # builds to dist
-netlify deploy # deploy the dist folder
+```typescript jsx
+// RootLanguagees might contain common stuff like brandName etc
+<I18NProvider lang={"en"} bundles={RootLanguages}>
+  {/** Each page/screen/feature can provide it's own bundle which can easily 
+   be code-splitted. Note how lang is inherited too **/}
+  <I18NProvider bundles={PageLanguages}>
+    //...
+  </I18NProvider>    
+</I18NProvider>
 ```
 
-Alternatively, if you already have a git repo connected, you can set up continuous deployment with Netlify:
+## Markdown
 
-```bash
-netlify init
-# build command: yarn build && cd example && yarn && yarn build
-# directory to deploy: example/dist
-# pick yes for netlify.toml
-```
+I18N values can support markdown. Only bold, italic, strikethrough, code and links are supported
+by default, but you can easily add your own. See the [tests](TODO) for examples.
 
-## Named Exports
-
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
-
-## Including Styles
-
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
-
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
-
-## Publishing to NPM
-
-We recommend using [np](https://github.com/sindresorhus/np).
-
-## Usage with Lerna
-
-When creating a new package with TSDX within a project set up with Lerna, you might encounter a `Cannot resolve dependency` error when trying to run the `example` project. To fix that you will need to make changes to the `package.json` file _inside the `example` directory_.
-
-The problem is that due to the nature of how dependencies are installed in Lerna projects, the aliases in the example project's `package.json` might not point to the right place, as those dependencies might have been installed in the root of your Lerna project.
-
-Change the `alias` to point to where those packages are actually installed. This depends on the directory structure of your Lerna project, so the actual path might be different from the diff below.
-
-```diff
-   "alias": {
--    "react": "../node_modules/react",
--    "react-dom": "../node_modules/react-dom"
-+    "react": "../../../node_modules/react",
-+    "react-dom": "../../../node_modules/react-dom"
-   },
-```
-
-An alternative to fixing this problem would be to remove aliases altogether and define the dependencies referenced as aliases as dev dependencies instead. [However, that might cause other problems.](https://github.com/palmerhq/tsdx/issues/64)

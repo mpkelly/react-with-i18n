@@ -4,11 +4,19 @@ import {I18NComponentProps, I18NProvider, LanguageBundleSet, withI18N} from "../
 
 type Props = React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
 
-const Text = (props: Props) => {
+const TextFC = (props: Props) => {
   return <span {...props}/>
 }
 
-const I18NText = withI18N<Props & I18NComponentProps>(Text);
+class TextCC extends React.Component<Props, any> {
+  render() {
+    return <span {...this.props}/>
+  }
+}
+
+const I18NTextFC = withI18N<Props & I18NComponentProps>(TextFC);
+
+const I18NTextCC = withI18N<Props & I18NComponentProps>(TextCC);
 
 const RootLanguages:LanguageBundleSet = {
   en: {
@@ -38,10 +46,19 @@ const NestedLanguages:LanguageBundleSet = {
 }
 
 describe('it', () => {
+  it('works with class components', () => {
+    const dom = render(
+      <I18NProvider bundles={RootLanguages} lang={"en"}>
+        <I18NTextCC i18n={{children:"hello"}}/>
+      </I18NProvider>
+    );
+    dom.getByText("Hello.1");
+  });
+
   it('renders to children by default', () => {
       const dom = render(
         <I18NProvider bundles={RootLanguages} lang={"en"}>
-          <I18NText i18n={"hello"}/>
+          <I18NTextFC i18n={"hello"} />
         </I18NProvider>
       );
     dom.getByText("Hello.1");
@@ -50,7 +67,7 @@ describe('it', () => {
   it('renders to children explicitly', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={{children:"hello"}}/>
+        <I18NTextFC i18n={{children:"hello"}}/>
       </I18NProvider>
     );
     dom.getByText("Hello.1");
@@ -59,7 +76,7 @@ describe('it', () => {
   it('renders multiple properties', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={[
+        <I18NTextFC i18n={[
           {children:"hello"},
           {role:"role"}
         ]}/>
@@ -72,7 +89,7 @@ describe('it', () => {
   it('supports args', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={{children:"args", args:[1, "abc"]}}/>
+        <I18NTextFC i18n={{children:"args", args:[1, "abc"]}}/>
       </I18NProvider>
     );
     dom.getByText("Has 1 and abc");
@@ -82,7 +99,7 @@ describe('it', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
         <I18NProvider bundles={NestedLanguages}>
-          <I18NText i18n={[
+          <I18NTextFC i18n={[
             {children:"hello"},
             {role:"role"}
           ]}/>
@@ -97,7 +114,7 @@ describe('it', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
         <I18NProvider bundles={NestedLanguages} lang={"other"}>
-          <I18NText i18n={[
+          <I18NTextFC i18n={[
             {children:"hello"},
             {role:"role"}
           ]}/>
@@ -111,7 +128,7 @@ describe('it', () => {
   it('supports bold markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={"bold"}/>
+        <I18NTextFC i18n={"bold"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -123,7 +140,7 @@ describe('it', () => {
   it('supports italic markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={"italic"}/>
+        <I18NTextFC i18n={"italic"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -135,7 +152,7 @@ describe('it', () => {
   it('supports strikethrough markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={"strikethrough"}/>
+        <I18NTextFC i18n={"strikethrough"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -147,7 +164,7 @@ describe('it', () => {
   it('supports code markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={"code"}/>
+        <I18NTextFC i18n={"code"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -159,7 +176,7 @@ describe('it', () => {
   it('supports link markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={"link"}/>
+        <I18NTextFC i18n={"link"}/>
       </I18NProvider>
     );
     // @ts-ignore
@@ -171,7 +188,7 @@ describe('it', () => {
   it('supports mixed markdown', () => {
     const dom = render(
       <I18NProvider bundles={RootLanguages} lang={"en"}>
-        <I18NText i18n={"mixed"}/>
+        <I18NTextFC i18n={"mixed"}/>
       </I18NProvider>
     );
     const html = `Some <em><strong>bold italic</strong></em> <code>code</code> <a href="url">link</a> <del>strikethrough</del> here`;

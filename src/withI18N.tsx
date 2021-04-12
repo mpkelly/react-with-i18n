@@ -12,27 +12,25 @@ export type I18NComponentProps = {
 };
 
 //TODO fix typings
-export function withI18N<P extends I18NComponentProps>(Component: React.FC<P>): React.FC<P> {
+export function withI18N<P extends I18NComponentProps>(Component: React.ComponentType<P>) {
   return forwardRef<HTMLElement, P>((props, ref) => {
     const next = assignI18NValues(props);
     // @ts-ignore
     return <Component {...next} ref={ref} />;
-  }) as unknown as React.FC<P>
+  })
 };
 
 const assignI18NValues = (props: I18NComponentProps) => {
   let { i18n = '', ...rest } = props;
   if (!i18n) return props;
-  const { bundles, lang, markdownRules} = useI18N();
-  if (!lang || !bundles) {
-    const names = bundles ? Object.keys(bundles).join(", ") : "undefined";
-    throw new Error(`Unable to find bundle: lang=${lang} and bundles=${names}`)
-  }
-  const bundle = bundles[lang];
+  const { bundles, lang,  markdownRules} = useI18N();
+
+  const current = bundles[lang as string];
+
   toArray(i18n).forEach((property) => {
     const { args = [], ...other } = property;
     const key = Object.keys(other)[0];
-    const value = bundle[(property as any)[key]];
+    const value = current[(property as any)[key]];
     if (value) {
       let result:any;
       if (typeof value === 'string') {
