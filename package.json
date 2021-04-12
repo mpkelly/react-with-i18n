@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.3",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -34,7 +34,16 @@
     "trailingComma": "es5"
   },
   "name": "react-with-i18n",
-  "author": "mkelly",
+  "author": "mkelly <kikemelly@gmail.com>",
+  "homepage": "https://github.com/mpkelly/react-with-i18n",
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mpkelly/react-with-i18n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mpkelly/react-with-i18n/issues"
+  },
   "module": "dist/react-with-i18n.esm.js",
   "size-limit": [
     {
@@ -58,8 +67,5 @@
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",
     "typescript": "^4.2.3"
-  },
-  "dependencies": {
-    "react-merge-context": "^0.1.0"
   }
 }

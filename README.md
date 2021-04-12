@@ -33,7 +33,7 @@ const Languages = {
 
 ## Features at a glance
 
-- Smallest library on Bundlephobia at just ...
+- Tiny (the smallest?) library at only  1.26 kB gzipped. 
 - The cleanest way to add I18N support for React - no special components and just one extra prop for your library components
 - Support for language bundle nesting and inheritance (think code splitting)
 - Support any properties on target components, including ARIA properties

@@ -7031,13 +7031,6 @@
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   "version" "17.0.2"
 
-"react-merge-context@^0.1.0":
-  "integrity" "sha512-OuRoifTKQd+m4yjwNrWh01TpZupBR0D4vTCIt1gICc9LnvJ3jGhhP68M7aGJr1OEzyp4RoDRD8B5h7L0KchW2g=="
-  "resolved" "https://registry.npmjs.org/react-merge-context/-/react-merge-context-0.1.0.tgz"
-  "version" "0.1.0"
-  dependencies:
-    "deepmerge" "^4.2.2"
-
 "react@^17.0.2":
   "integrity" "sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA=="
   "resolved" "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz"

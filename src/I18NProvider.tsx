@@ -1,5 +1,4 @@
 import React, {FC, ReactNode} from "react";
-import {createContext} from "react-merge-context";
 import {LanguageBundle, LanguageBundleSet} from "./LanguageBundle";
 import {DefaultMarkdownRules, MarkdownRule} from "./Markdown";
 
@@ -9,7 +8,8 @@ type Value = {
   lang?: string;
 };
 
-export const [Provider, useI18N] = createContext<Value>()
+const Context = React.createContext<Value | undefined>(undefined);
+export const useI18N = () => React.useContext(Context) as Value;
 
 type Props = {
   /**
@@ -51,9 +51,13 @@ export const I18NProvider: FC<Props> = (
 ) => {
   let { bundles = {}, children, markdownRules = DefaultMarkdownRules, lang} = props;
 
+  const parentBundles = useI18N()?.bundles || {};
+
   const flat:LanguageBundleSet = {};
   Object.keys(bundles).forEach(name => {
-    flat[name] = flatten(bundles[name]);
+    const bundle = flatten(bundles[name]);
+    const parent = parentBundles[name] || {};
+    flat[name] = {...parent, ...bundle};
   })
 
   const parentLang = useI18N()?.lang;
@@ -74,7 +78,7 @@ export const I18NProvider: FC<Props> = (
     markdownRules
   };
 
-  return <Provider value={value}>{children}</Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 const flatten = (object:any) => {
