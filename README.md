@@ -182,7 +182,7 @@ const QuoteRule: MarkdownRule = {
 
 const rules = DefaultMarkdownRules.concat([QuoteRule]);
 
-<I18NProvider lang="..." bundles="..." markdownRules={[rules]}>
+<I18NProvider lang="..." bundles="..." markdownRules={rules}>
   //...
 </I18NProvider>
 
