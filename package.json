@@ -34,7 +34,17 @@
     "trailingComma": "es5"
   },
   "name": "react-with-i18n",
-  "author": "mkelly <kikemelly@gmail.com>",
+  "author": "mkelly",
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "localization",
+    "i18next",
+    "react-i18next",
+    "React-intl",
+    "LinguiJS",
+    "react"
+  ],
   "homepage": "https://github.com/mpkelly/react-with-i18n",
   "readme": "README.md",
   "repository": {

@@ -6,9 +6,6 @@ export type MarkdownRule = {
 };
 
 export const transform = (text: string, rules: MarkdownRule[]): string => {
-  if (!rules.length) {
-    return text;
-  }
 
   rules.forEach((rule) => {
     let match: RegExpExecArray | null;
