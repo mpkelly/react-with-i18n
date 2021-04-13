@@ -11,7 +11,8 @@ import {withI18N, I18NComponentProps, I18NProvider} from "react-with-i18n";
 import {Text, TextProps} from "./my-awesome-library/Text"
 
 // Do this for each library component that needs I18N support. You can (and should) 
-// I18Nize ARIA properties like role etc
+// I18Nize ARIA properties, like role etc, so you will typically need to use this 
+// HOC on more than just text components
 const I18NText = withI18N<TextProps & I18NComponentProps>(Text);
 
 // In your app elsewhere
@@ -57,13 +58,13 @@ export type I18NComponentProps = {
 ```
 
 So this means you can use the property as follows. By default the key's value will be 
-set as the React children property, which is the standard use-case.
+set as the React `children` property, which is the standard use-case.
 
 ````typescript jsx
 <Text i18n={"key"}/>
 ````
 
-However, you can set specify the target property
+However, you can set specify the target property youserlf
 
 ````typescript jsx
 //Same as above
@@ -121,8 +122,7 @@ const Component = () => {
 
 ## Nesting bundles
 
-You can nest `I18NProviders` and the child will automatically merge its bundles in with its parents. It uses
-the `deepmerge` library for this. 
+You can nest `I18NProviders` and the child will automatically merge its bundles in with its parents. 
 
 ```typescript jsx
 // RootLanguagees might contain common stuff like brandName etc
@@ -138,5 +138,5 @@ the `deepmerge` library for this.
 ## Markdown
 
 I18N values can support markdown. Only bold, italic, strikethrough, code and links are supported
-by default, but you can easily add your own. See the [tests](TODO) for examples.
+by default, but you can easily add your own. See the [tests](test/I18NProvider.test.tsx) for examples.
 
