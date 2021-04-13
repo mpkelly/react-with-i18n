@@ -140,3 +140,50 @@ You can nest `I18NProviders` and the child will automatically merge its bundles 
 I18N values can support markdown. Only bold, italic, strikethrough, code and links are supported
 by default, but you can easily add your own. See the [tests](test/I18NProvider.test.tsx) for examples.
 
+The syntax support is as follows
+
+```javascript
+const Languages = {
+  en: {
+    bold1: "Some **bold** text",
+    bold2: "Some __bold__ text",
+    italic1: "Some *italic* text",
+    italic2: "Some _italic_ text",
+    strikethrough: "Some ~~strikethrough~~ text",
+    strikethrough: "Some `code` text",
+    link: "A [link](url)"
+  }
+  //...
+}
+```
+
+You can easily define your own rules. The tiny markdown engine is just a regex replacement loop. Here's
+the strikethrough rule
+
+```typescript
+export const StrikethroughRule: MarkdownRule = {
+  pattern: /~~(.*?)~~/,
+  onMatch: (match) => `<del>${match[1]}</del>`
+};
+```
+
+The `I18NProvider` supports a `markdownRules` property which is an array of `MarkdownRule`s. If no value
+is provided then the `I18NProvider` defaults to `DefaultMarkdownRules`. 
+
+If you want to add additional rules you can do so like
+
+```typescript jsx
+import {I18NProvider, DefaultMarkdownRules} from "react-with-i18n"
+   
+const QuoteRule: MarkdownRule = {
+  pattern: /\:\"(.*?)\"\:/,
+  onMatch: (match) => `<q>${match[1]}</q>`
+};
+
+const rules = DefaultMarkdownRules.concat([QuoteRule]);
+
+<I18NProvider lang="..." bundles="..." markdownRules={[rules]}>
+  //...
+</I18NProvider>
+
+```
