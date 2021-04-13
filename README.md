@@ -150,7 +150,7 @@ const Languages = {
     italic1: "Some *italic* text",
     italic2: "Some _italic_ text",
     strikethrough: "Some ~~strikethrough~~ text",
-    strikethrough: "Some `code` text",
+    code: "Some `code` text",
     link: "A [link](url)"
   }
   //...
