@@ -127,7 +127,7 @@ You can nest `I18NProviders` and the child will automatically merge its bundles 
 ```typescript jsx
 // RootLanguagees might contain common stuff like brandName etc
 <I18NProvider lang={"en"} bundles={RootLanguages}>
-  {/** Each page/screen/feature can provide it's own bundle which can easily 
+  {/** Each page/screen/feature can provide its own bundle which can easily 
    be code-splitted. Note how lang is inherited too **/}
   <I18NProvider bundles={PageLanguages}>
     //...
