@@ -1,6 +1,6 @@
 # React with I18N
 
-Easily add lightweight yet powerful I18N support to your component library components. 
+Easily add lightweight yet powerful I18N support to your component library components. This library does not ship with any special `Translate` / `I18NText` component or helper functions. Instead, you pass your existing components to a HOC to have them ehanced. This way the I18N library doesn't takeover your codebase, as most of them tend to do. 
 
 ## Quick start
 
@@ -8,12 +8,12 @@ Easily add lightweight yet powerful I18N support to your component library compo
 
 ```typescript jsx
 import {withI18N, I18NComponentProps, I18NProvider} from "react-with-i18n";
-import {Text, TextProps} from "./my-awesome-library/Text"
+import {Text as _Text, TextProps} from "./my-awesome-library/Text"
 
 // Do this for each library component that needs I18N support. You can (and should) 
 // I18Nize ARIA properties, like role etc, so you will typically need to use this 
 // HOC on more than just text components
-const I18NText = withI18N<TextProps & I18NComponentProps>(Text);
+const Text = withI18N<TextProps & I18NComponentProps>(_Text);
 
 // In your app elsewhere
 
@@ -28,7 +28,7 @@ const Languages = {
 }
 
 <I18NProvider lang={"en"} bundles={Languages}>
-  <I18NText i18n="login.userName"/>  
+  <Text i18n="login.userName"/>  
 </I18NProvider>
 ```
 
@@ -122,7 +122,7 @@ const Component = () => {
 
 ## Nesting bundles
 
-You can nest `I18NProviders` and the child will automatically merge its bundles in with its parents. 
+You can nest `I18NProviders` and the child will automatically merge its bundles in with its parents. This is useful for code-splitting. Rather than just one large bundle for a given language, you should create a common/root bundle and then make bundles for each feature/page/screen. 
 
 ```typescript jsx
 // RootLanguagees might contain common stuff like brandName etc
@@ -187,3 +187,61 @@ const rules = DefaultMarkdownRules.concat([QuoteRule]);
 </I18NProvider>
 
 ```
+
+## Dynamically loading bundles / React Suspense
+
+There is no need to load each language into memory. Instead you can just use dynamic imports to fetch only the bundles you need. Here's how you can do it.
+
+```typescript jsx
+
+const App = async () => {
+  const [lang, setLang] = useState("en");
+  const current = await import(`./path/Translations-${lang}.ts`);
+  return (
+    <I18NProvider lang={lang} bundles={current}>
+      {/** **/}
+    </I18NProvider>
+  );
+};
+
+```
+If you don't want to block your whole app and want to use `React.Suspense` then you need a way to convert the promise returned by `import(...)` into a `Resource` which `Suspense` can interface with. You can use the `wrapPromise` function from the [official docs](https://reactjs.org/docs/concurrent-mode-suspense.html) example code [here](https://codesandbox.io/s/frosty-hermann-bztrp?file=/src/fakeApi.js). Then you can do something like this in your app.
+
+```typescript jsx
+const App = () => {
+  return (
+    <Suspense fallback={<span>...</span>}>
+      <Root />
+    </Suspense>
+  );
+};
+
+const Root = () => {
+  const [lang, setLang] = useState("en");
+  const current = wrapPromise(import(`./path/Translations-${lang}.ts`));
+  return (
+    <I18NProvider lang={lang} bundles={current.read()}>
+      {/** **/}
+    </I18NProvider>
+  );
+};
+
+```
+
+### Formatting text
+
+The library allows you to use whatever string formatting library you like but does export a few utilities. These are just light wrappers around JavaScript's native `Intl` object and so don't add much bulk to the library. 
+
+```typescript jsx
+import {pluralize, formatCurrency, formatDate} from "react-with-i18n";
+
+const Bundle = {
+  en: {
+    key1: (count:number) => pluralize(count, "order", "orders"), 
+    key2: (amount:number, currency:string) => `Total amount: ${formatCurrency(amount, currency)}`, 
+    key3: (date:Date) => formatDate(date), 
+  }
+}
+
+```
+You can pass in additonal params for `INTL` options and `locale`. See the API [here](src/Formatting.tsx). 
