@@ -6,7 +6,6 @@ export type MarkdownRule = {
 };
 
 export const transform = (text: string, rules: MarkdownRule[]): string => {
-
   rules.forEach((rule) => {
     let match: RegExpExecArray | null;
     const globalSearch = new RegExp(rule.pattern, "g");
@@ -15,7 +14,6 @@ export const transform = (text: string, rules: MarkdownRule[]): string => {
       text = text.replace(match[0], replacement)
     }
   });
-
   return text;
 }
 
@@ -43,7 +41,6 @@ export const LinkRule: MarkdownRule = {
   // eslint-disable-next-line no-useless-escape
   pattern: /\[([^\[]+)\]\(([^\)]+)\)/,
   onMatch: (match) => `<a href=${match[2]}>${match[1]}</a>`
-
 };
 
 export const DefaultMarkdownRules = [

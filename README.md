@@ -16,7 +16,6 @@ import {Text as _Text, TextProps} from "./my-awesome-library/Text"
 const Text = withI18N<TextProps & I18NComponentProps>(_Text);
 
 // In your app elsewhere
-
 const Languages = {
   en: {
     login: {
@@ -122,7 +121,9 @@ const Component = () => {
 
 ## Nesting bundles
 
-You can nest `I18NProviders` and the child will automatically merge its bundles in with its parents. This is useful for code-splitting. Rather than just one large bundle for a given language, you should create a common/root bundle and then make bundles for each feature/page/screen. 
+You can nest `I18NProviders` and the child will automatically merge its bundles in with its parents. This 
+is useful for code-splitting. Rather than just one large bundle for a given language, you should 
+create a common/root language bundle and then make bundles for each feature/page/screen. 
 
 ```typescript jsx
 // RootLanguagees might contain common stuff like brandName etc
@@ -190,7 +191,8 @@ const rules = DefaultMarkdownRules.concat([QuoteRule]);
 
 ## Dynamically loading bundles / React Suspense
 
-There is no need to load each language into memory. Instead you can just use dynamic imports to fetch only the bundles you need. Here's how you can do it.
+There is no need to load each language into memory. Instead, you can just use dynamic imports to 
+fetch only the bundles you need. Here's how you can do it.
 
 ```typescript jsx
 
@@ -205,7 +207,12 @@ const App = async () => {
 };
 
 ```
-If you don't want to block your whole app and want to use `React.Suspense` then you need a way to convert the promise returned by `import(...)` into a `Resource` which `Suspense` can interface with. You can use the `wrapPromise` function from the [official docs](https://reactjs.org/docs/concurrent-mode-suspense.html) example code [here](https://codesandbox.io/s/frosty-hermann-bztrp?file=/src/fakeApi.js). Then you can do something like this in your app.
+If you don't want to block your whole app and want to use `React.Suspense` then you need a way to 
+convert the promise returned by `import(...)` into a `Resource` which `Suspense` can interface 
+with. You can use the `wrapPromise` function from the 
+[official docs](https://reactjs.org/docs/concurrent-mode-suspense.html) example code 
+[here](https://codesandbox.io/s/frosty-hermann-bztrp?file=/src/fakeApi.js). Then you can do something 
+like this in your app.
 
 ```typescript jsx
 const App = () => {
@@ -219,8 +226,10 @@ const App = () => {
 const Root = () => {
   const [lang, setLang] = useState("en");
   const current = wrapPromise(import(`./path/Translations-${lang}.ts`));
+  // Calling read() will mean the promise gets thrown while the promise is pending.
+  // The Suspense component above catches this promise and shows the fallback
   return (
-    <I18NProvider lang={lang} bundles={current.read()}>
+    <I18NProvider lang={lang} bundles={current.read()}> 
       {/** **/}
     </I18NProvider>
   );
@@ -230,7 +239,9 @@ const Root = () => {
 
 ### Formatting text
 
-The library allows you to use whatever string formatting library you like but does export a few utilities. These are just light wrappers around JavaScript's native `Intl` object and so don't add much bulk to the library. 
+The library allows you to use whatever string formatting library you like but does export a 
+few utilities. These are just light wrappers around JavaScript's native `Intl` object and 
+so don't add much bulk to the library. 
 
 ```typescript jsx
 import {pluralize, formatCurrency, formatDate} from "react-with-i18n";
@@ -244,4 +255,4 @@ const Bundle = {
 }
 
 ```
-You can pass in additonal params for `INTL` options and `locale`. See the API [here](src/Formatting.tsx). 
+You can pass in additional params for `Intl` options and `locale`. See the API [here](src/Formatting.tsx). 
