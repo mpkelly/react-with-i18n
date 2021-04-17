@@ -226,7 +226,7 @@ const App = () => {
 const Root = () => {
   const [lang, setLang] = useState("en");
   const current = wrapPromise(import(`./path/Translations-${lang}.ts`));
-  // Calling read() will mean the promise gets thrown while the promise is pending.
+  // Calling read() will mean the wrapped `Promise` gets thrown while it is pending.
   // The Suspense component above catches this promise and shows the fallback
   return (
     <I18NProvider lang={lang} bundles={current.read()}> 
